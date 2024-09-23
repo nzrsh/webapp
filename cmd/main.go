@@ -8,6 +8,7 @@ import (
 
 var DB *sql.DB
 
+// Initial
 func main() {
 	log.Println("Попытка запуститься...")
 	addr := "localhost:8080"
