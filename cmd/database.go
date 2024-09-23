@@ -48,9 +48,9 @@ func LoadDefaultData() {
 		if err != nil {
 			log.Fatalf("Ошибка подготовки стандартных значений для базы данных: %s", err)
 		}
-		defer stmt.Close()
 
 		_, err = stmt.Exec(product.ID, product.Type, product.Name, product.Price)
+		stmt.Close()
 		if err != nil {
 			log.Fatalf("Ошибка добавления стандартных значений в таблицу продуктов: %s", err)
 		}
@@ -65,7 +65,7 @@ func GetProductsFromTable() ([]Product, error) {
 	var Products []Product
 	rows, err := DB.Query("SELECT id, type, name, price FROM products")
 	if err != nil {
-		fmt.Errorf("Ошибка при получении списка продуктов: %s", err)
+		return nil, fmt.Errorf("ошибка при получении списка продуктов: %s", err)
 	}
 
 	defer rows.Close()
@@ -74,14 +74,12 @@ func GetProductsFromTable() ([]Product, error) {
 		var p Product
 		err := rows.Scan(&p.ID, &p.Type, &p.Name, &p.Price)
 		if err != nil {
-			fmt.Errorf("ошибка при считывании продукта в структуру: %s", err)
+			return nil, fmt.Errorf("ошибка при считывании продукта в структуру: %s", err)
 		}
 		Products = append(Products, p)
-
-		if err := rows.Err(); err != nil {
-			fmt.Errorf("ошибка при выполнении запроса на чтение продуктов: %s", err)
-		}
-
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("ошибка при выполнении запроса на чтение продуктов: %s", err)
 	}
 	return Products, nil
 }
@@ -98,4 +96,71 @@ func GetProductFromTable(id int) (Product, error) {
 		return p, err
 	}
 	return p, nil
+}
+
+func UpdateProductFromTable(id int, product Product) error {
+	var exists bool
+	err := DB.QueryRow("SELECT EXISTS(SELECT 1 FROM products WHERE id=?)", id).Scan(&exists)
+	if err != nil {
+		return fmt.Errorf("ошибка при проверке существования продукта: %s", err)
+	}
+	if !exists {
+		return fmt.Errorf("продукт с ID %d не найден", id)
+	}
+	stmt, err := DB.Prepare("UPDATE products SET type = ?, name = ?, price = ? WHERE id = ?")
+	if err != nil {
+		return fmt.Errorf("ошибка обновления продукта %s", err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(product.Type, product.Name, product.Price, id)
+	if err != nil {
+		return fmt.Errorf("ошибка обновления продукта %s", err)
+	}
+	return nil
+}
+
+func DeleteProductFromTable(id int) error {
+	var exists bool
+	err := DB.QueryRow("SELECT EXISTS(SELECT 1 FROM products WHERE id=?)", id).Scan(&exists)
+	if err != nil {
+		return fmt.Errorf("ошибка при проверке существования продукта: %s", err)
+	}
+	if !exists {
+		return fmt.Errorf("продукт с ID %d не найден", id)
+	}
+
+	stmt, err := DB.Prepare("DELETE FROM products WHERE id = ?")
+	if err != nil {
+		return fmt.Errorf("ошибка удаления продукта %s", err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(id)
+	if err != nil {
+		return fmt.Errorf("ошибка удаления продукта %s", err)
+	}
+
+	return nil
+}
+
+func CreateProductInTable(product Product) (int, error) {
+
+	stmt, err := DB.Prepare("INSERT INTO products (type, name, price) VALUES (?, ?, ?)")
+	if err != nil {
+		return 0, fmt.Errorf("ошибка cоздания продукта %s", err)
+	}
+	defer stmt.Close()
+
+	result, err := stmt.Exec(product.Type, product.Name, product.Price)
+	if err != nil {
+		return 0, fmt.Errorf("ошибка cоздания продукта %s", err)
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, fmt.Errorf("ошибка cоздания продукта %s", err)
+	}
+
+	return int(id), nil
 }
