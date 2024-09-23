@@ -1,9 +1,16 @@
 package main
 
-import "github.com/julienschmidt/httprouter"
+import (
+	"net/http"
+
+	"github.com/julienschmidt/httprouter"
+)
 
 func SetupRouter() *httprouter.Router {
 	r := httprouter.New()
+
+	r.ServeFiles("/public/*filepath", http.Dir("public"))
+
 	//HTML HANDLERS
 	r.GET("/", homePageHandler)
 	r.GET("/login", loginPageHandler)
