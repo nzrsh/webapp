@@ -17,8 +17,11 @@ func SetupRouter() *httprouter.Router {
 	r.GET("/register", registerPageHandler)
 
 	//API HANDLERS
-	//r.POST("/auth", loginHandler)
+
+	//Эндпоинт получения списка продуктов в формате массива объектов json
 	r.GET("/api/products", getProducts)
+	//Эндпоинт получения продукта в формате объекта json
+	r.GET("/api/products/:id", getProduct)
 
 	return r
 }

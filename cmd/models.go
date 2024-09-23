@@ -6,20 +6,20 @@ type Credentials struct {
 }
 
 type User struct {
-	Id       int    `json:"id"`
+	ID       int    `json:"id"`
 	Login    string `json:"login"`
 	Password string `json:"password"`
 }
 
 type Product struct {
-	Id    int    `json:"id"`
-	Type  string `json:"type"`
-	Name  string `json:"name"`
-	Price string `json:"price"`
+	ID    int     `json:"id"`
+	Type  string  `json:"type"`
+	Name  string  `json:"name"`
+	Price float64 `json:"price"`
 }
 
 var CreateTableUsersQuery string = `
-CREATE TABLE "users" (
+CREATE TABLE IF NOT EXISTS "users" (
 	"id"	INTEGER NOT NULL UNIQUE,
 	"login"	TEXT NOT NULL UNIQUE,
 	"password"	TEXT NOT NULL,
@@ -28,7 +28,7 @@ CREATE TABLE "users" (
 `
 
 var CreateTableProductsQuery string = `
-CREATE TABLE "products" (
+CREATE TABLE IF NOT EXISTS "products" (
 	"id"	INTEGER NOT NULL UNIQUE,
 	"type"	TEXT NOT NULL,
 	"name"	TEXT NOT NULL,

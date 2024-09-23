@@ -15,6 +15,7 @@ func main() {
 	databasePath := "./database/data.db"
 	r := SetupRouter()
 	DB = OpenDatabase(databasePath)
+	LoadDefaultData()
 	defer DB.Close()
 
 	log.Println("Сервер запущен по адресу:", addr)
