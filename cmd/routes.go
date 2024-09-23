@@ -18,5 +18,7 @@ func SetupRouter() *httprouter.Router {
 
 	//API HANDLERS
 	//r.POST("/auth", loginHandler)
+	r.GET("/api/products", getProducts)
+
 	return r
 }
