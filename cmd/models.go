@@ -18,6 +18,16 @@ type Product struct {
 	Price float64 `json:"price"`
 }
 
+/* JSON MODEL
+{
+	"type":"cpu",
+	"name":"name",
+	"price":price
+}
+
+
+*/
+
 var CreateTableUsersQuery string = `
 CREATE TABLE IF NOT EXISTS "users" (
 	"id"	INTEGER NOT NULL UNIQUE,
