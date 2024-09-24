@@ -1,23 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name= "viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавление полей</title>
     <link rel="stylesheet" href="/public/styles/styles.css">
-    <title>Главная</title>
 </head>
-<body >
+<body>
+
     <table class="header">
         <thead>
             <tr>
-                <th><button class="icon " id="addButton">Добавить</button></th>
-                <th><button class="icon">Войти</button></th>
+                <th><button class="icon" id="addButton">Добавить</button></th>
+                <th><button class="icon">Удалить</button></th>
                 <th><button class="icon">Войти</button></th>
             </tr>
         </thead>
     </table>
+
+    <div id="inputContainer">
+        <input class="product" type="text" placeholder="Тип продукта" id="productType" />
+        <input class="product" type="text" placeholder="Название продукта" id="productName" />
+        <input class="product" type="number" placeholder="Цена продукта" id="productPrice" />
+        <button id="createProductButton">Создать продукт</button>
+    </div>
     <h1><span style="text-align: center; margin-left: 45%;">Вы на главной</span></h1>
-    <div class="queue" id="queue"><div class="item">fdsf</div><div class="item">fdsf</div><div class="item">fdsf</div></div>
+    <div class="queue" id="queue"></div>
 </body>
+<script src="/public/js/tablerequestscript.js"></script>
 <script src="/public/js/tablescript.js"></script>
 </html>

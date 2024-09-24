@@ -37,11 +37,25 @@ input{
 }
 
 .item{
+    text-align: center;
     margin: 1%;
     height: 10%;
     min-height: 250px;
     width: 20%;
     min-width: 200px;
-    background-color: #333;
+    border: 1px solid;
     display: inline-block;
+}
+
+#inputContainer {
+    width: 30%;
+    display: inline;
+    margin-left: 70%;
+    display: none; /* Скрываем div по умолчанию */
+    margin-top: 10px;
+}
+
+.product{
+    right: 0;
+    width: 90%;
 }
