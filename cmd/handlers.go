@@ -6,7 +6,10 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
+	"github.com/dgrijalva/jwt-go"
+	_ "github.com/dgrijalva/jwt-go"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -22,6 +25,35 @@ func loginPageHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Param
 
 func registerPageHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	http.ServeFile(w, r, "./public/html/reg.html")
+}
+
+//AUTH
+
+// Секретный ключ для подписи токенов
+var jwtKey = []byte("svo")
+
+// Структура для хранения полезной информации токена
+type Claims struct {
+	Login string `json:"login"`
+	jwt.StandardClaims
+}
+
+// Функция генерации подписанного токена с полезной информацией, срок жизни 24 часа
+func GenerateJWT(login string) (string, error) {
+	expirationTime := time.Now().Add(24 * time.Hour)
+	claims := &Claims{
+		Login: login,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(jwtKey)
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
 }
 
 // API

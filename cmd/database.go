@@ -6,7 +6,7 @@ import (
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
-	_ "golang.org/x/crypto/bcrypt"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func OpenDatabase(path string) *sql.DB {
@@ -98,6 +98,7 @@ func GetProductFromTable(id int) (Product, error) {
 	return p, nil
 }
 
+// Изменение продукта в БД по его ID
 func UpdateProductFromTable(id int, product Product) error {
 	var exists bool
 	err := DB.QueryRow("SELECT EXISTS(SELECT 1 FROM products WHERE id=?)", id).Scan(&exists)
@@ -120,6 +121,7 @@ func UpdateProductFromTable(id int, product Product) error {
 	return nil
 }
 
+// Удаление продукта из БД по его ID
 func DeleteProductFromTable(id int) error {
 	var exists bool
 	err := DB.QueryRow("SELECT EXISTS(SELECT 1 FROM products WHERE id=?)", id).Scan(&exists)
@@ -144,6 +146,7 @@ func DeleteProductFromTable(id int) error {
 	return nil
 }
 
+// Добавление нового продукта в качестве новой записи в БД
 func CreateProductInTable(product Product) (int, error) {
 
 	stmt, err := DB.Prepare("INSERT INTO products (type, name, price) VALUES (?, ?, ?)")
@@ -163,4 +166,54 @@ func CreateProductInTable(product Product) (int, error) {
 	}
 
 	return int(id), nil
+}
+
+// Хеширование пароля с помощью безопасного алгоритма шифрования bcrypt
+func HashPassword(password string) (string, error) {
+	//Генерация хеша
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", fmt.Errorf("ошибка генерации хеша пароля: %s", err)
+	}
+	return string(hashedPassword), nil
+}
+
+// Проверка, совпадает ли пароль с его хешем
+func CheckPassword(hashedPassword, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+}
+
+// Сохраняем пользователя в БД
+func SaveUserToDB(login string, hashedPassword string) error {
+	insertQuery := `INSERT INTO users (login, password) VALUES (?,?)`
+	_, err := DB.Exec(insertQuery, login, hashedPassword)
+	if err != nil {
+		return fmt.Errorf("ошибка сохранения пользователя в базу данных: %s", err)
+	}
+
+	log.Printf("Пользователь %s успешно добавлен. Хеш пароля: %s\n", login, hashedPassword)
+	return nil
+}
+
+// Аутентификация пользователя через БД
+func AuthenticateUser(login, password string) error {
+	// Получение хешированного пароля пользователя из БД
+	var hashedPassword string
+	query := `SELECT password FROM users WHERE login = ?`
+	err := DB.QueryRow(query, login).Scan(&hashedPassword)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return fmt.Errorf("пользователь не найден")
+		}
+		return err
+	}
+
+	// Сравнение введённого пароля с хешем
+	err = CheckPassword(hashedPassword, password)
+	if err != nil {
+		return fmt.Errorf("неправильный пароль")
+	}
+
+	fmt.Println("Аутентификация успешна!")
+	return nil
 }
