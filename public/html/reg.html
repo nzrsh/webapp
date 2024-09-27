@@ -12,13 +12,13 @@
     <div class="main">
         <div class="login">
             <span>Добро пожаловать</span>
-            <Form>
-                <input type="text" id="login" placeholder="Введите логин">
-                <input type="text" id="password" placeholder="Введите пароль">
-                <input type="text" id="repeatPassword" placeholder="Введите пароль ещё раз">
-                <div id="error" class="error">Пароли не совпадают</div>
-                <button class="reg-button" id="reg-button" style="display: block;">Зарегистрироваться</button>
-            </Form>
+            <form> <!-- Исправлено на <form> -->
+                <input type="text" id="login" placeholder="Введите логин" required>
+                <input type="password" id="password" placeholder="Введите пароль" required> <!-- Исправлено на type="password" -->
+                <input type="password" id="repeatPassword" placeholder="Введите пароль ещё раз" required> <!-- Исправлено на type="password" -->
+                <div id="error" class="error" style="display: none;">Пароли не совпадают</div>
+                <button class="reg-button" id="reg-button" style="display: block;" onclick="regUser()">Зарегистрироваться</button>
+            </form> <!-- Исправлено на <form> -->
         </div>
     </div>
 </body>

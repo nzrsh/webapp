@@ -12,7 +12,7 @@ repeatPassword.addEventListener('input', function() {
     }
 });
 
-document.getElementById('reg-button').addEventListener('click', async () => {
+function regUser(){
     // Проверка, что пароли совпадают перед отправкой формы
     if (password.value !== repeatPassword.value) {
         error.style.display = 'block';
@@ -20,31 +20,29 @@ document.getElementById('reg-button').addEventListener('click', async () => {
         return; // Прекращаем выполнение, если пароли не совпадают
     }
 
-    const newProduct = {
+    const Credentials = {
         login: login.value,
         password: password.value
     };
 
-    try {
-        const response = await fetch('/auth/register', {
+        const response = fetch('/auth/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(newProduct)
+            body: JSON.stringify(Credentials)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Ошибка сети: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(result => {
+            console.log(result);
+            alert('Пользователь успешно зарегистрирован!');
+        })
+        .catch(error => {
+            console.error("Ошибка с сервера:", error.message);
         });
-
-        if (!response.ok) {
-            throw new Error('Ошибка сети: ' + response.status);
-        }
-
-        const result = await response.json();
-        console.log(result);
-        console.log('Пользователь создан:', result);
-
-        alert('Пользователь успешно зарегистрирован!');
-        window.location.href = '/login';
-    } catch (error) {
-        console.error("Ошибка с сервера:", error.message);
-    }
-});
+};
