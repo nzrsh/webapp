@@ -59,3 +59,8 @@ input{
     right: 0;
     width: 90%;
 }
+
+.error {
+    color: red;
+    display: none;
+}

@@ -5,7 +5,6 @@ document.getElementById('createProductButton').addEventListener('click', async (
     const type = document.getElementById('productType').value;
     const name = document.getElementById('productName').value;
     const price = parseFloat(document.getElementById('productPrice').value);
-    console.log(type,name,price);
 
     if (!type || !name || isNaN(price)) {
         alert('Пожалуйста, заполните все поля корректно.');
@@ -19,7 +18,7 @@ document.getElementById('createProductButton').addEventListener('click', async (
     };
 
     try {
-        const response = await fetch('http://localhost:8080/api/products', {
+        const response = await fetch('/api/products', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

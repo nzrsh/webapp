@@ -1,4 +1,3 @@
-const queue = [1,2,12,3,23,23,2,3,213,2,3,23,2,13,23,23];
 const queueElement = document.getElementById('queue');
 const addButton = document.getElementById('addButton');
 fetchProducts();
@@ -15,9 +14,14 @@ function productManager(items) {
         queueElement.appendChild(div);
     });
 }
+
+function goToReg(){
+    window.location.href = '/register';
+}
+
 async function fetchProducts() {
     try {
-        const response = await fetch('http://localhost:8080/api/products');
+        const response = await fetch('/api/products');
         if (!response.ok) {
             throw new Error('Сеть ответила с ошибкой: ' + response.status);
         }
