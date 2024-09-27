@@ -12,16 +12,16 @@
     <div class="main">
         <div class="login">
             <span>Добро пожаловать</span>
-            <Form>
-                <input type="text" id="login" placeholder="Введите логин">
-                <input type="text" id="password" placeholder="Введите пароль">
-                <input type="text" id="repeatPassword" placeholder="Введите пароль ещё раз">
-                <div id="error" class="error">Пароли не совпадают</div>
-                <button class="reg-button" id="reg-button" style="display: block;">Зарегистрироваться</button>
-            </Form>
+            <form id="registration-form"> 
+                <input type="text" id="login" placeholder="Введите логин" required>
+                <input type="password" id="password" placeholder="Введите пароль" required> 
+                <input type="password" id="repeatPassword" placeholder="Введите пароль ещё раз" required> 
+                <div id="error" class="error" style="display: none;">Пароли не совпадают</div>
+                <button onclick = "register()" class="reg-button" id="reg-button" style="display: block;">Зарегистрироваться</button>
+            </form> 
         </div>
     </div>
+    <script src="/public/js/regscript.js"></script>
 </body>
-<script src="/public/js/regscript.js"></script>
 
 </html>
