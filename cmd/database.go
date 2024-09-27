@@ -65,7 +65,7 @@ func GetProductsFromTable() ([]Product, error) {
 	var Products []Product
 	rows, err := DB.Query("SELECT id, type, name, price FROM products")
 	if err != nil {
-		return nil, fmt.Errorf("ошибка при получении списка продуктов: %s", err)
+		return nil, fmt.Errorf("GetProductsFromTable | ошибка при получении списка продуктов: %s", err)
 	}
 
 	defer rows.Close()
@@ -74,12 +74,12 @@ func GetProductsFromTable() ([]Product, error) {
 		var p Product
 		err := rows.Scan(&p.ID, &p.Type, &p.Name, &p.Price)
 		if err != nil {
-			return nil, fmt.Errorf("ошибка при считывании продукта в структуру: %s", err)
+			return nil, fmt.Errorf("GetProductsFromTable |  ошибка при считывании продукта в структуру: %s", err)
 		}
 		Products = append(Products, p)
 	}
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("ошибка при выполнении запроса на чтение продуктов: %s", err)
+		return nil, fmt.Errorf("GetProductsFromTable | ошибка при выполнении запроса на чтение продуктов: %s", err)
 	}
 	return Products, nil
 }
@@ -103,20 +103,20 @@ func UpdateProductFromTable(id int, product Product) error {
 	var exists bool
 	err := DB.QueryRow("SELECT EXISTS(SELECT 1 FROM products WHERE id=?)", id).Scan(&exists)
 	if err != nil {
-		return fmt.Errorf("ошибка при проверке существования продукта: %s", err)
+		return fmt.Errorf("UpdateProductFromTable | ошибка при проверке существования продукта: %s", err)
 	}
 	if !exists {
 		return fmt.Errorf("продукт с ID %d не найден", id)
 	}
 	stmt, err := DB.Prepare("UPDATE products SET type = ?, name = ?, price = ? WHERE id = ?")
 	if err != nil {
-		return fmt.Errorf("ошибка обновления продукта %s", err)
+		return fmt.Errorf("UpdateProductFromTable |  ошибка обновления продукта %s", err)
 	}
 	defer stmt.Close()
 
 	_, err = stmt.Exec(product.Type, product.Name, product.Price, id)
 	if err != nil {
-		return fmt.Errorf("ошибка обновления продукта %s", err)
+		return fmt.Errorf("UpdateProductFromTable | ошибка обновления продукта %s", err)
 	}
 	return nil
 }
@@ -126,7 +126,7 @@ func DeleteProductFromTable(id int) error {
 	var exists bool
 	err := DB.QueryRow("SELECT EXISTS(SELECT 1 FROM products WHERE id=?)", id).Scan(&exists)
 	if err != nil {
-		return fmt.Errorf("ошибка при проверке существования продукта: %s", err)
+		return fmt.Errorf("DeleteProductFromTable | ошибка при проверке существования продукта: %s", err)
 	}
 	if !exists {
 		return fmt.Errorf("продукт с ID %d не найден", id)
@@ -134,13 +134,13 @@ func DeleteProductFromTable(id int) error {
 
 	stmt, err := DB.Prepare("DELETE FROM products WHERE id = ?")
 	if err != nil {
-		return fmt.Errorf("ошибка удаления продукта %s", err)
+		return fmt.Errorf("DeleteProductFromTable | ошибка удаления продукта %s", err)
 	}
 	defer stmt.Close()
 
 	_, err = stmt.Exec(id)
 	if err != nil {
-		return fmt.Errorf("ошибка удаления продукта %s", err)
+		return fmt.Errorf("DeleteProductFromTable | ошибка удаления продукта %s", err)
 	}
 
 	return nil
@@ -151,18 +151,18 @@ func CreateProductInTable(product Product) (int, error) {
 
 	stmt, err := DB.Prepare("INSERT INTO products (type, name, price) VALUES (?, ?, ?)")
 	if err != nil {
-		return 0, fmt.Errorf("ошибка cоздания продукта %s", err)
+		return 0, fmt.Errorf("CreateProductInTable | ошибка cоздания продукта %s", err)
 	}
 	defer stmt.Close()
 
 	result, err := stmt.Exec(product.Type, product.Name, product.Price)
 	if err != nil {
-		return 0, fmt.Errorf("ошибка cоздания продукта %s", err)
+		return 0, fmt.Errorf("CreateProductInTable | ошибка cоздания продукта %s", err)
 	}
 
 	id, err := result.LastInsertId()
 	if err != nil {
-		return 0, fmt.Errorf("ошибка cоздания продукта %s", err)
+		return 0, fmt.Errorf("CreateProductInTable | ошибка cоздания продукта %s", err)
 	}
 
 	return int(id), nil
@@ -173,7 +173,7 @@ func HashPassword(password string) (string, error) {
 	//Генерация хеша
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return "", fmt.Errorf("ошибка генерации хеша пароля: %s", err)
+		return "", fmt.Errorf("HashPassword | ошибка генерации хеша пароля: %s", err)
 	}
 	return string(hashedPassword), nil
 }
@@ -188,10 +188,10 @@ func SaveUserToDB(login string, hashedPassword string) error {
 	insertQuery := `INSERT INTO users (login, password) VALUES (?,?)`
 	_, err := DB.Exec(insertQuery, login, hashedPassword)
 	if err != nil {
-		return fmt.Errorf("ошибка сохранения пользователя в базу данных: %s", err)
+		return fmt.Errorf("SaveUserToDB | ошибка сохранения пользователя в базу данных: %s", err)
 	}
 
-	log.Printf("Пользователь %s успешно добавлен. Хеш пароля: %s\n", login, hashedPassword)
+	log.Printf("Пользователь %s успешно добавлен.", login)
 	return nil
 }
 
@@ -203,7 +203,7 @@ func AuthenticateUser(login, password string) error {
 	err := DB.QueryRow(query, login).Scan(&hashedPassword)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return fmt.Errorf("пользователь не найден")
+			return ErrInvalidCredentials
 		}
 		return err
 	}
@@ -211,9 +211,47 @@ func AuthenticateUser(login, password string) error {
 	// Сравнение введённого пароля с хешем
 	err = CheckPassword(hashedPassword, password)
 	if err != nil {
-		return fmt.Errorf("неправильный пароль")
+		return ErrInvalidCredentials
 	}
 
-	fmt.Println("Аутентификация успешна!")
+	log.Printf("Аутентификация пользователя \"%s\" успешна!", login)
+	return nil
+}
+
+func CheckUserExists(login string) (bool, error) {
+	var exists bool
+	checkQuery := "SELECT EXISTS(SELECT 1 FROM users WHERE login = ? LIMIT 1);"
+	err := DB.QueryRow(checkQuery, login).Scan(&exists)
+	if err != nil && err != sql.ErrNoRows {
+		return false, fmt.Errorf("CheckUserExists | ошибка поиска пользователя в бд: %s", err)
+	}
+	return exists, nil
+}
+
+// Функция для регистрации нового пользователя в базе данных
+func RegisterUser(login, password string) error {
+	// Проверяем, существует ли пользователь с данным логином
+	userExists, err := CheckUserExists(login)
+	if err != nil {
+		return err
+	}
+
+	if userExists {
+		return ErrUserAlreadyExists
+	}
+
+	// Хешируем пароль перед его сохранением в базу данных
+	hashedPassword, err := HashPassword(password)
+	if err != nil {
+		return fmt.Errorf("пользователь \"%s\" ошибка хеширования пароля: %v", login, err)
+	}
+
+	// SQL запрос для добавления нового пользователя в базу данных
+	query := `INSERT INTO users (login, password) VALUES (?, ?);`
+	_, err = DB.Exec(query, login, string(hashedPassword))
+	if err != nil {
+		return fmt.Errorf("ошибка при добавлении пользователя: %v", err)
+	}
+
 	return nil
 }

@@ -16,6 +16,11 @@ func SetupRouter() *httprouter.Router {
 	r.GET("/login", loginPageHandler)
 	r.GET("/register", registerPageHandler)
 
+	//AUTH HANDLERS
+
+	r.POST("/auth/register", registerHandler)
+	r.POST("/auth/login", loginHandler)
+
 	//API HANDLERS
 
 	//Эндпоинт получения списка продуктов в формате массива объектов json
@@ -23,11 +28,11 @@ func SetupRouter() *httprouter.Router {
 	//Эндпоинт получения продукта в формате объекта json
 	r.GET("/api/products/:id", getProductHandler)
 	//Эндпоинт обновления продукта
-	r.PUT("/api/products/:id", updateProductHandler)
+	r.PUT("/api/products/:id", JWTAuthMiddleware(updateProductHandler))
 	//Эндпоинт удаления продукта
-	r.DELETE("/api/products/:id", deleteProductHandler)
+	r.DELETE("/api/products/:id", JWTAuthMiddleware(deleteProductHandler))
 	//Эндпоинт добавления продукта
-	r.POST("/api/products", createProductHandler)
+	r.POST("/api/products", JWTAuthMiddleware(createProductHandler))
 
 	return r
 }

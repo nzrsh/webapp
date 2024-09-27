@@ -1,9 +1,14 @@
 package main
 
+import "errors"
+
 type Credentials struct {
 	Login    string `json:"login"`
 	Password string `json:"password"`
 }
+
+var ErrInvalidCredentials = errors.New("неверный логин или пароль")
+var ErrUserAlreadyExists = errors.New("пользователь уже существует")
 
 type User struct {
 	ID       int    `json:"id"`
