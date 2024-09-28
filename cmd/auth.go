@@ -149,7 +149,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params
 		Name:     "token",
 		Value:    tokenString,
 		Expires:  time.Now().Add(24 * time.Hour),
-		HttpOnly: false,
+		HttpOnly: true,
 	})
 
 	w.WriteHeader(http.StatusCreated) // Возвращаем статус 201 Created

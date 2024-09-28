@@ -12,12 +12,12 @@
     <div class="main">
         <div class="login">
             <span>Добро пожаловать</span>
-            <form id="registration-form"> 
+            <form onsubmit="register(event)"> 
                 <input type="text" id="login" placeholder="Введите логин" required>
                 <input type="password" id="password" placeholder="Введите пароль" required> 
                 <input type="password" id="repeatPassword" placeholder="Введите пароль ещё раз" required> 
                 <div id="error" class="error" style="display: none;">Пароли не совпадают</div>
-                <button onclick = "register()" class="reg-button" id="reg-button" style="display: block;">Зарегистрироваться</button>
+                <button type="sumbit" class="reg-button" id="reg-button" style="display: block;">Зарегистрироваться</button>
             </form> 
         </div>
     </div>
