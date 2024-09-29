@@ -22,10 +22,10 @@ input{
 }
 
 .header{
-    margin-left: 50%;
+    margin-left: 75%;
     right: 0;
     top: 0;
-    width: 50%;
+    width: 25%;
     background-color: #333;
     color: white;
     padding: 10px;
@@ -37,6 +37,7 @@ input{
 }
 
 .item{
+    cursor: pointer;
     padding: 3%;
     text-align: center;
     margin: 1%;
@@ -48,12 +49,38 @@ input{
     display: inline-block;
 }
 
+.info{
+    width: 50%;
+    height: 50%;
+    display:none;
+    position: fixed;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+    background-color: #fff;
+    border: #333 2px solid;
+    border-radius: 5%;
+    z-index: 20;
+}
+
+.overlay {
+    display: none; 
+    position: absolute; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8); 
+    z-index: 1; 
+    text-align: center;
+}
+
 
 #inputContainer {
     width: 30%;
     display: inline;
     margin-left: 70%;
-    display: none; /* Скрываем div по умолчанию */
+    display: none; 
     margin-top: 10px;
 }
 
