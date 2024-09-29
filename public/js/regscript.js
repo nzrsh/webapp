@@ -1,6 +1,6 @@
 
 function goToLog(){
-    window.location.href = "/login";
+    document.location.href = "/login";
 }
 
 async function register(event) {
