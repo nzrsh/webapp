@@ -4,9 +4,8 @@ function goToReg(){
 
 async function auth(event) {
     event.preventDefault();
-    console.log("+");
 
-    const username = document.getElementById("login").value; // Переименовано для ясности
+    const username = document.getElementById("login").value; 
     const password = document.getElementById("password").value;
 
     const creds = {
@@ -24,7 +23,7 @@ async function auth(event) {
         body: JSON.stringify(creds)
     });
 
-    if (response.status === 201) {
+    if (response.status === 200) {
         window.location.href = "/";
     } else if (response.status === 400) {
         const message = await response.text();

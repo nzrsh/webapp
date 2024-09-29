@@ -156,3 +156,51 @@ func getImageHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params
 	w.Header().Set("Content-Type", "image/jpeg") // или другой тип изображения
 	http.ServeFile(w, r, filePath)               // Отправляем файл клиенту
 }
+
+func renameFileHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	username, err := getLoginFromCookie(r)
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	oldName := ps.ByName("filename")
+	var requestBody struct {
+		NewName string `json:"newName"`
+	}
+	err = json.NewDecoder(r.Body).Decode(&requestBody)
+	if err != nil || requestBody.NewName == "" {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	oldFilePath := filepath.Join("uploads", username, oldName)
+	newFilePath := filepath.Join("uploads", username, requestBody.NewName)
+
+	err = os.Rename(oldFilePath, newFilePath)
+	if err != nil {
+		http.Error(w, "Error renaming file", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent) // Успешное переименование файла
+}
+
+func deleteFileHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	username, err := getLoginFromCookie(r)
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	filename := ps.ByName("filename")
+	filePath := filepath.Join("uploads", username, filename)
+
+	err = os.Remove(filePath)
+	if err != nil {
+		http.Error(w, "Error deleting file", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent) // Успешное удаление файла
+}

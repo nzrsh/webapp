@@ -132,8 +132,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	err = AuthenticateUser(creds.Login, creds.Password)
 	if err != nil {
 		if errors.Is(err, ErrInvalidCredentials) {
-			//http.Error(w, "неверный логин или пароль", http.StatusUnauthorized)
-			http.Redirect(w, r, "/login", http.StatusFound)
+			http.Error(w, ErrInvalidCredentials.Error(), http.StatusUnauthorized)
 			return
 		}
 		log.Printf("loginHandler | ошибка аутентификации: %s", err)

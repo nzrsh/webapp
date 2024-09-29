@@ -26,6 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (message === "authorized") {
         alert("Вы уже авторизованы.");
+
+        urlParams.delete("message");
+        window.history.replaceState({}, document.title, window.location.pathname);
     }
 });
 

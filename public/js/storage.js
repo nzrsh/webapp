@@ -107,7 +107,7 @@ document.getElementById('uploadForm').addEventListener('submit', async (event) =
 
 // Удаление файла
 async function deleteFile(filename) {
-    const response = await fetch(`/api/files/${filename}`, {
+    const response = await fetch(`/storage/files/${filename}`, {
         method: 'DELETE'
     });
 
@@ -124,7 +124,7 @@ async function renameFile(oldName) {
     const newName = prompt('Введите новое имя файла', oldName);
     if (!newName) return;
 
-    const response = await fetch(`/api/files/${oldName}`, {
+    const response = await fetch(`/storage/files/${oldName}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
