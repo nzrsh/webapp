@@ -15,16 +15,22 @@ function productManager(items) {
         div.id = item.id;
         div.className = 'item';
         div.name = item.type;
+
         const img = document.createElement('img');
-        img.src = 'api/img/' + item.id;
-        img.width = 300;
-        img.height = 200
-        div.appendChild(img);
-        div.textContent = item.name;
-        const p = document.createElement('p')
-        p.textContent = item.price
-        div.appendChild(p)
-        queueElement.appendChild(div);
+        img.src = 'api/img/' + item.id; // Проверьте, что этот путь правильный
+        img.width = 150;
+        img.height = 150;
+        div.appendChild(img); // Добавляем изображение
+
+        const p = document.createElement('p');
+        p.textContent = item.name; // Добавляем имя продукта
+        div.appendChild(p);
+
+        const price = document.createElement('p');
+        price.textContent = item.price; // Добавляем цену
+        div.appendChild(price);
+
+        queueElement.appendChild(div); // Добавляем весь div в контейнер
     });
 }
 
