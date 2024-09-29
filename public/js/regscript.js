@@ -1,3 +1,8 @@
+
+function goToLog(){
+    window.location.href = "/login";
+}
+
 async function register(event) {
     event.preventDefault(); // Переместили сюда
 
@@ -5,7 +10,6 @@ async function register(event) {
     const password = document.getElementById("password").value;
     const repeatPassword = document.getElementById("repeatPassword").value;
 
-    console.log("Кнопка нажата.");
 
     // Проверка на совпадение паролей
     if (password !== repeatPassword) {
@@ -39,4 +43,5 @@ async function register(event) {
     } else {
         alert('Ошибка регистрации. Попробуйте позже.');
     }
+
 }
