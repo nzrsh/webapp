@@ -40,7 +40,10 @@ async function register(event) {
     } else if (response.status === 401) {
         const message = await response.text();
         alert(message); // Отображаем сообщение об ошибке
-    } else {
+    } else if (response.status === 400) {
+        const message = await response.text();
+        alert(message); // Отображаем сообщение об ошибке
+    }else {
         alert('Ошибка регистрации. Попробуйте позже.');
     }
 
