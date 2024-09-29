@@ -37,6 +37,8 @@ func SetupRouter() *httprouter.Router {
 	r.DELETE("/api/products/:id", JWTAuthMiddleware(deleteProductHandler))
 	//Эндпоинт добавления продукта
 	r.POST("/api/products", JWTAuthMiddleware(createProductHandler))
+	//Картинка продукта
+	r.GET("/api/img/:id", getProductImageHandler)
 
 	//API STORAGE HANDLERS
 	r.GET("/storage/files", JWTAuthMiddleware(getFilesHandler))

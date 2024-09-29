@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -112,4 +114,20 @@ func createProductHandler(w http.ResponseWriter, r *http.Request, _ httprouter.P
 
 	w.WriteHeader(http.StatusCreated)
 	//fmt.Fprintf(w, "Продукт %d %s успешно создан.", id, product.Name)
+}
+
+func getProductImageHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	id := ps.ByName("id")
+	if !strings.HasSuffix(id, ".jpg") {
+		id += ".jpg" // Добавляем .jpg, если его нет
+	}
+
+	imagePath := filepath.Join("public", "img", id)
+	w.Header().Set("Content-Type", "image/jpeg")
+	http.ServeFile(w, r, imagePath)
+
+	if err := r.Context().Err(); err != nil {
+		http.Error(w, "Image not found", http.StatusNotFound)
+		return
+	}
 }
