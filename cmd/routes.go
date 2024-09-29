@@ -24,9 +24,9 @@ func SetupRouter() *httprouter.Router {
 	//API HANDLERS
 
 	//Эндпоинт получения списка продуктов в формате массива объектов json
-	r.GET("/api/products", getProductsHandler)
+	r.GET("/api/products", JWTAuthMiddleware(getProductsHandler))
 	//Эндпоинт получения продукта в формате объекта json
-	r.GET("/api/products/:id", getProductHandler)
+	r.GET("/api/products/:id", JWTAuthMiddleware(getProductHandler))
 	//Эндпоинт обновления продукта
 	r.PUT("/api/products/:id", JWTAuthMiddleware(updateProductHandler))
 	//Эндпоинт удаления продукта

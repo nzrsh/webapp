@@ -91,6 +91,11 @@ func loginHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
+	err = validateCreds(creds)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+
 	err = AuthenticateUser(creds.Login, creds.Password)
 	if err != nil {
 		if errors.Is(err, ErrInvalidCredentials) {
@@ -125,6 +130,11 @@ func registerHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params
 		return
 	}
 
+	err = validateCreds(creds)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+
 	err = RegisterUser(creds.Login, creds.Password)
 	if err != nil {
 		if errors.Is(err, ErrUserAlreadyExists) {
@@ -153,4 +163,14 @@ func registerHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params
 	})
 
 	w.WriteHeader(http.StatusCreated) // Возвращаем статус 201 Created
+}
+
+func validateCreds(creds Credentials) error {
+	if creds.Login == "" {
+		return ErrEmptyLogin
+	}
+	if creds.Password == "" {
+		return ErrEmptyPassword
+	}
+	return nil
 }
