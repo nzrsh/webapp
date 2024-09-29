@@ -56,13 +56,13 @@ function displayFiles(files) {
 
         // Кнопка для удаления файла
         const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Delete';
+        deleteButton.textContent = 'Удалить';
         deleteButton.onclick = () => deleteFile(file.name);
         actionsCell.appendChild(deleteButton);
 
         // Кнопка для переименования файла
         const renameButton = document.createElement('button');
-        renameButton.textContent = 'Rename';
+        renameButton.textContent = 'Переименовать';
         renameButton.onclick = () => renameFile(file.name);
         actionsCell.appendChild(renameButton);
 
