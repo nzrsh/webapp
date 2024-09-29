@@ -5,6 +5,7 @@ fetchProducts();
 function productManager(items) {
     items.forEach(item => {
         const div = document.createElement('div');
+        div.id = item.id;
         div.className = 'item';
         div.name = item.type;
         div.textContent = item.name;

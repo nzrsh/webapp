@@ -8,15 +8,10 @@
 </head>
 <body>
 
-    <table class="header">
-        <thead>
-            <tr>
-                <th><button class="icon" id="addButton">Добавить</button></th>
-                <th><button class="icon">Удалить</button></th>
+    <div class="header">
+
                 <th><button class="icon" onclick="goToLog()">Войти</button></th>
-            </tr>
-        </thead>
-    </table>
+    </div>
 
     <div id="inputContainer">
         <input class="product" type="text" placeholder="Тип продукта" id="productType" />
@@ -25,7 +20,10 @@
         <button id="createProductButton">Создать продукт</button>
     </div>
     <div class="queue" id="queue"></div>
+    <div class="info" id = "info"></div>
+    <div class="overlay" id="overlay"></div>
 </body>
 <script src="/public/js/tablerequestscript.js"></script>
 <script src="/public/js/tablescript.js"></script>
+<script src="/public/js/productscript.js"></script>
 </html>
