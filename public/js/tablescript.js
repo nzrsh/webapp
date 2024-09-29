@@ -15,8 +15,8 @@ function productManager(items) {
     });
 }
 
-function goToReg(){
-    window.location.href = '/register';
+function goToLog(){
+    document.location.href = "/login";;
 }
 
 async function fetchProducts() {

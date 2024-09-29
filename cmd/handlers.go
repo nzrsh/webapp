@@ -22,7 +22,7 @@ func registerPageHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Pa
 }
 
 func loginPageHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	http.ServeFile(w, r, "./public/html/reg.html")
+	http.ServeFile(w, r, "./public/html/login.html")
 }
 
 // API
