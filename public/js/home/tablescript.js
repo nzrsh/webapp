@@ -15,6 +15,11 @@ function productManager(items) {
         div.id = item.id;
         div.className = 'item';
         div.name = item.type;
+        const img = document.createElement('img');
+        img.src = 'api/img/' + item.id;
+        img.width = 300;
+        img.height = 200
+        div.appendChild(img);
         div.textContent = item.name;
         const p = document.createElement('p')
         p.textContent = item.price
