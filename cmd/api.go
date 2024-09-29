@@ -2,9 +2,14 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -96,20 +101,89 @@ func deleteProductHandler(w http.ResponseWriter, r *http.Request, ps httprouter.
 }
 
 func createProductHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	var product Product
-	if err := json.NewDecoder(r.Body).Decode(&product); err != nil {
-		log.Printf("createProductHandler | Ошибка при получении ID продукта: %s\n", err)
-		http.Error(w, "Некорректный запрос", http.StatusBadRequest)
+	// Устанавливаем максимальный размер файла
+	err := r.ParseMultipartForm(10 << 20) // 10 MB
+	if err != nil {
+		http.Error(w, "Ошибка при парсинге формы", http.StatusBadRequest)
 		return
 	}
 
-	_, err := CreateProductInTable(product)
+	// Получаем данные из формы
+	typeProduct := r.FormValue("type")
+	nameProduct := r.FormValue("name")
+	priceProduct := r.FormValue("price")
+
+	// Проверка на пустые значения
+	if typeProduct == "" || nameProduct == "" || priceProduct == "" {
+		http.Error(w, "Пожалуйста, заполните все поля", http.StatusBadRequest)
+		return
+	}
+
+	// Обработка цены
+	price, err := strconv.ParseFloat(priceProduct, 64)
 	if err != nil {
-		log.Printf("createProductHandler | Ошибка создании продукта: %s\n", err)
+		http.Error(w, "Некорректная цена", http.StatusBadRequest)
+		return
+	}
+
+	// Сохранение картинки
+	file, _, err := r.FormFile("image")
+	if err != nil {
+		http.Error(w, "Ошибка при получении изображения", http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	// Создаем продукт
+	product := Product{
+		ID:    0,
+		Type:  typeProduct,
+		Name:  nameProduct,
+		Price: price,
+	}
+
+	// Создание ID для продукта (можно использовать автоинкремент из базы данных)
+	productID, err := CreateProductInTable(product)
+	if err != nil {
+		log.Printf("createProductHandler | Ошибка при создании продукта: %s\n", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
+	// Путь для сохранения изображения
+	imgPath := filepath.Join("public", "img", fmt.Sprintf("%d.jpg", productID))
+
+	// Создаем файл для сохранения изображения
+	out, err := os.Create(imgPath)
+	if err != nil {
+		http.Error(w, "Ошибка при сохранении изображения", http.StatusInternalServerError)
+		return
+	}
+	defer out.Close()
+
+	// Копируем содержимое файла в новый файл
+	_, err = io.Copy(out, file)
+	if err != nil {
+		http.Error(w, "Ошибка при копировании изображения", http.StatusInternalServerError)
+		return
+	}
+	// Отправляем ответ клиенту
 	w.WriteHeader(http.StatusCreated)
-	//fmt.Fprintf(w, "Продукт %d %s успешно создан.", id, product.Name)
+	json.NewEncoder(w).Encode(product) // Возвращаем созданный продукт
+}
+
+func getProductImageHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	id := ps.ByName("id")
+	if !strings.HasSuffix(id, ".jpg") {
+		id += ".jpg" // Добавляем .jpg, если его нет
+	}
+
+	imagePath := filepath.Join("public", "img", id)
+	w.Header().Set("Content-Type", "image/jpeg")
+	http.ServeFile(w, r, imagePath)
+
+	if err := r.Context().Err(); err != nil {
+		http.Error(w, "Image not found", http.StatusNotFound)
+		return
+	}
 }

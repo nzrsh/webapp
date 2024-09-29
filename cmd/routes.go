@@ -16,6 +16,8 @@ func SetupRouter() *httprouter.Router {
 	r.GET("/login", loginPageHandler)
 	r.GET("/register", registerPageHandler)
 	r.GET("/storage", JWTAuthMiddleware(storagePageHandler))
+	r.GET("/edit", JWTAuthMiddleware(editPageHandler))
+	r.GET("/add", JWTAuthMiddleware(addPageHandler))
 
 	//AUTH HANDLERS
 
@@ -37,6 +39,8 @@ func SetupRouter() *httprouter.Router {
 	r.DELETE("/api/products/:id", JWTAuthMiddleware(deleteProductHandler))
 	//Эндпоинт добавления продукта
 	r.POST("/api/products", JWTAuthMiddleware(createProductHandler))
+	//Картинка продукта
+	r.GET("/api/img/:id", getProductImageHandler)
 
 	//API STORAGE HANDLERS
 	r.GET("/storage/files", JWTAuthMiddleware(getFilesHandler))
