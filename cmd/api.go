@@ -90,12 +90,20 @@ func deleteProductHandler(w http.ResponseWriter, r *http.Request, ps httprouter.
 		http.Error(w, "Некорректный ID", http.StatusBadRequest)
 		return
 	}
+
 	err = DeleteProductFromTable(id)
 	if err != nil {
 		log.Printf("deleteProductHandler | Ошибка удаления продукта: %s\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	imagePath := filepath.Join("public", "img", strconv.Itoa(id)+".jpg")
+	err = os.Remove(imagePath)
+	if err != nil {
+		log.Printf("deleteProductHandler | Ошибка удаления изображения: %s\n", err)
+	}
+
 	w.WriteHeader(http.StatusOK)
 	//fmt.Fprintf(w, "Продукт с ID %d успешно удален.", id)
 }
