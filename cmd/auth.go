@@ -62,8 +62,6 @@ func JWTAuthMiddleware(next httprouter.Handle) httprouter.Handle {
 		token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 			return jwtKey, nil
 		})
-
-		log.Printf("Пользователь \"%s\" отправил токен: %s\n", claims.Login, cookie.Value)
 		if err != nil {
 			if err == jwt.ErrSignatureInvalid {
 				log.Printf("Пользователь \"%s\" неверная подпись токена\n", claims.Login)
@@ -127,6 +125,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	err = validateCreds(creds)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	err = AuthenticateUser(creds.Login, creds.Password)
@@ -251,13 +250,15 @@ func validateCreds(creds Credentials) error {
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	http.SetCookie(w, &http.Cookie{
+	cookie := &http.Cookie{
 		Name:     "token",
 		Value:    "",
-		Expires:  time.Now().Add(-1 * time.Hour),
-		Path:     "/",
+		Expires:  time.Unix(0, 0), // Ставим истекшее время
 		HttpOnly: true,
-	})
+		Path:     "/",
+	}
+	http.SetCookie(w, cookie)
 
+	// Вернуть успешный ответ
 	w.WriteHeader(http.StatusOK)
 }
