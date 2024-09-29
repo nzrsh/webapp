@@ -23,7 +23,7 @@ func registerPageHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Pa
 			return []byte("svo"), nil
 		}); err == nil {
 			// Токен действителен, перенаправляем на главную страницу
-			http.Redirect(w, r, "/", http.StatusFound)
+			http.Redirect(w, r, "/?message=authorized", http.StatusFound)
 			return
 		}
 	}
@@ -41,7 +41,7 @@ func loginPageHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Param
 			return []byte("svo"), nil
 		}); err == nil {
 			// Токен действителен, перенаправляем на главную страницу
-			http.Redirect(w, r, "/", http.StatusFound)
+			http.Redirect(w, r, "/?message=authorized", http.StatusFound)
 			return
 		}
 	}

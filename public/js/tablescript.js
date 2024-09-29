@@ -17,8 +17,17 @@ function productManager(items) {
 }
 
 function goToLog(){
-    document.location.href = "/login";;
+    document.location.href = "/login";
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const message = urlParams.get("message");
+
+    if (message === "authorized") {
+        alert("Вы уже авторизованы.");
+    }
+});
 
 async function fetchProducts() {
     try {
