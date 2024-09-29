@@ -2,6 +2,13 @@ package main
 
 import "errors"
 
+type FileInfo struct {
+	Name    string `json:"name"`
+	Size    int64  `json:"size"`
+	ModTime string `json:"modTime"`
+	IsImage bool   `json:"isImage"`
+}
+
 type Credentials struct {
 	Login    string `json:"login"`
 	Password string `json:"password"`

@@ -49,7 +49,7 @@ func JWTAuthMiddleware(next httprouter.Handle) httprouter.Handle {
 
 		if err != nil {
 			if err == http.ErrNoCookie {
-				w.WriteHeader(http.StatusUnauthorized)
+				http.Redirect(w, r, "/login", http.StatusFound)
 				return
 			}
 			w.WriteHeader(http.StatusBadRequest)
@@ -62,11 +62,12 @@ func JWTAuthMiddleware(next httprouter.Handle) httprouter.Handle {
 		token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 			return jwtKey, nil
 		})
+
 		log.Printf("Пользователь \"%s\" отправил токен: %s\n", claims.Login, cookie.Value)
 		if err != nil {
 			if err == jwt.ErrSignatureInvalid {
 				log.Printf("Пользователь \"%s\" неверная подпись токена\n", claims.Login)
-				w.WriteHeader(http.StatusUnauthorized)
+				http.Redirect(w, r, "/login", http.StatusFound)
 				return
 			}
 			w.WriteHeader(http.StatusBadRequest)
@@ -75,12 +76,44 @@ func JWTAuthMiddleware(next httprouter.Handle) httprouter.Handle {
 
 		if !token.Valid {
 			log.Printf("Пользователь \"%s\" токен невалиден\n", claims.Login)
-			w.WriteHeader(http.StatusUnauthorized)
+			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}
 
 		next(w, r, ps)
 	}
+}
+
+func getLoginFromCookie(r *http.Request) (string, error) {
+	// Извлекаем токен из куки
+	cookie, err := r.Cookie("token")
+	if err != nil {
+		return "", errors.New("токен не найден в куках")
+	}
+
+	tokenString := cookie.Value
+
+	// Парсинг токена и извлечение информации
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		// Вставьте ваш секретный ключ
+		return []byte("svo"), nil
+	})
+
+	if err != nil || !token.Valid {
+		return "", err
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", errors.New("не удалось извлечь claims")
+	}
+
+	login, ok := claims["login"].(string)
+	if !ok {
+		return "", errors.New("логин не найден в claims")
+	}
+
+	return login, nil
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -99,7 +132,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	err = AuthenticateUser(creds.Login, creds.Password)
 	if err != nil {
 		if errors.Is(err, ErrInvalidCredentials) {
-			http.Error(w, "неверный логин или пароль", http.StatusUnauthorized)
+			//http.Error(w, "неверный логин или пароль", http.StatusUnauthorized)
+			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}
 		log.Printf("loginHandler | ошибка аутентификации: %s", err)
