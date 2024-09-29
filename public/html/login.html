@@ -12,10 +12,11 @@
     <div class="main">
         <div class="login">
             <span>Добро пожаловать</span>
-            <form onsubmit="login(event)">
-                <input type="text" name="login" placeholder="Введите логин"> <br>
-                <input type="text" name="password" placeholder="Введите пароль"><br>
-                <button type="submit" class="reg-button" >Войти</button>
+            <form onsubmit="auth(event)">
+                <input type="text" id="login" placeholder="Введите логин"> <br>
+                <input type="text" id="password" placeholder="Введите пароль"><br>
+
+                <button type="submit" class="reg-button">Войти</button>
             </form>
             <hr>
             <button class="reg-button" onclick="goToReg()">Зарегистрироваться</button>
@@ -23,5 +24,4 @@
     </div>
 </body>
 <script src="/public/js/logscript.js"></script>
-
 </html>
