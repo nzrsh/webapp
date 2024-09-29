@@ -35,6 +35,8 @@ async function register(event) {
 
     // Исправлено: используем 'response' вместо 'responce'
     if (response.status === 201) {
+        localStorage.login = creds.login;
+        console.log(localStorage.login);
         alert('Пользователь успешно зарегистрирован!');
         window.location.href = "/"
     } else if (response.status === 401) {

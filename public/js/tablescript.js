@@ -32,6 +32,20 @@ async function fetchProducts() {
         console.error('Произошла ошибка:', error);
     }
 }
+
+async function fetchProducts() {
+    try {
+        const response = await fetch('/auth/me');
+        if (!response.ok) {
+            throw new Error('Сеть ответила с ошибкой: ' + response.status);
+        }
+        const products = await response.json(); // Преобразуем ответ в JSON
+        productManager(products); // Выводим полученные продукты в консоль
+    } catch (error) {
+        console.error('Произошла ошибка:', error);
+    }
+}
+
 document.getElementById('addButton').addEventListener('click', function() {
     const inputContainer = document.getElementById('inputContainer');
     inputContainer.style.display = inputContainer.style.display === 'none' ? 'block' : 'none';

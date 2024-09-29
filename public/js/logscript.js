@@ -28,6 +28,8 @@ async function login(event) {
 
     // Исправлено: используем 'response' вместо 'responce'
     if (response.status === 201) {
+        console.log('response')
+        localStorage.getItem('response')
         window.location.href = "/"
     } else if (response.status === 401) {
         const message = await response.text();
