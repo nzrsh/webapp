@@ -42,5 +42,7 @@ func SetupRouter() *httprouter.Router {
 	r.GET("/storage/files", JWTAuthMiddleware(getFilesHandler))
 	r.POST("/storage/files/upload", JWTAuthMiddleware(uploadFileHandler))
 	r.GET("/storage/files/image", JWTAuthMiddleware(getImageHandler))
+	r.DELETE("/storage/files/:filename", JWTAuthMiddleware(deleteFileHandler))
+	r.PUT("/storage/files/:filename", JWTAuthMiddleware(renameFileHandler))
 	return r
 }

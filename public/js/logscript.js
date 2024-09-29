@@ -4,9 +4,8 @@ function goToReg(){
 
 async function auth(event) {
     event.preventDefault();
-    console.log("+");
 
-    const username = document.getElementById("login").value; // Переименовано для ясности
+    const username = document.getElementById("login").value; 
     const password = document.getElementById("password").value;
 
     const creds = {
