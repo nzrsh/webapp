@@ -20,13 +20,16 @@ func SetupRouter() *httprouter.Router {
 
 	r.POST("/auth/register", registerHandler)
 	r.POST("/auth/login", loginHandler)
+	r.GET("/auth/logout", logoutHandler)
+	//Выдача данных о пользователе по токену
+	r.GET("/auth/me", meHandler)
 
 	//API HANDLERS
 
 	//Эндпоинт получения списка продуктов в формате массива объектов json
-	r.GET("/api/products", getProductsHandler)
+	r.GET("/api/products", JWTAuthMiddleware(getProductsHandler))
 	//Эндпоинт получения продукта в формате объекта json
-	r.GET("/api/products/:id", getProductHandler)
+	r.GET("/api/products/:id", JWTAuthMiddleware(getProductHandler))
 	//Эндпоинт обновления продукта
 	r.PUT("/api/products/:id", JWTAuthMiddleware(updateProductHandler))
 	//Эндпоинт удаления продукта

@@ -91,6 +91,11 @@ func loginHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
+	err = validateCreds(creds)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+
 	err = AuthenticateUser(creds.Login, creds.Password)
 	if err != nil {
 		if errors.Is(err, ErrInvalidCredentials) {
@@ -112,7 +117,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		Name:     "token",
 		Value:    tokenString,
 		Expires:  time.Now().Add(24 * time.Hour),
-		HttpOnly: false,
+		HttpOnly: true,
+		Path:     "/",
 	})
 	w.WriteHeader(http.StatusOK) // Успешный вход
 }
@@ -123,6 +129,11 @@ func registerHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
+	}
+
+	err = validateCreds(creds)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
 	err = RegisterUser(creds.Login, creds.Password)
@@ -150,7 +161,70 @@ func registerHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params
 		Value:    tokenString,
 		Expires:  time.Now().Add(24 * time.Hour),
 		HttpOnly: true,
+		Path:     "/",
 	})
 
 	w.WriteHeader(http.StatusCreated) // Возвращаем статус 201 Created
+}
+
+func meHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	cookie, err := r.Cookie("token")
+
+	if err != nil {
+		if err == http.ErrNoCookie {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	tokenStr := cookie.Value
+	claims := &Claims{}
+
+	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+	log.Printf("Пользователь \"%s\" отправил токен: %s\n", claims.Login, cookie.Value)
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			log.Printf("Пользователь \"%s\" неверная подпись токена\n", claims.Login)
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if !token.Valid {
+		log.Printf("Пользователь \"%s\" токен невалиден\n", claims.Login)
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	var data UserData
+	data.Login = claims.Login
+	json.NewEncoder(w).Encode(data)
+}
+
+func validateCreds(creds Credentials) error {
+	if creds.Login == "" {
+		return ErrEmptyLogin
+	}
+	if creds.Password == "" {
+		return ErrEmptyPassword
+	}
+	return nil
+}
+
+func logoutHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "token",
+		Value:    "",
+		Expires:  time.Now().Add(-1 * time.Hour),
+		Path:     "/",
+		HttpOnly: true,
+	})
+
+	w.WriteHeader(http.StatusOK)
 }
