@@ -41,14 +41,15 @@ input{
     padding: 1%;
     text-align: center;
     margin: 1%;
-    height: 10%;
-    min-height: 250px;
-    width: 15%;
-    min-width: 200px;
+    min-height: 350px;
+    max-height: 350px;
+    min-width: 300px;
+    max-width: 300px;
     border: 1px solid;
     display: inline-block;
     box-sizing: border-box;  
     vertical-align:top;
+    overflow: auto;  
 }
 
 .info{

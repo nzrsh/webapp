@@ -9,7 +9,9 @@ document.getElementById('queue').onclick = function(event) {
         var inf = document.getElementById('info');
         inf.style.display = 'block';
         const sourceDiv = document.getElementById(event.target.id);
-        const targetDiv = document.getElementById('info');
+        const p = document.createElement('p');
+        p.textContent = 'Тип продукта: ' + event.target.name;
+        sourceDiv.appendChild(p);
         inf.innerHTML = sourceDiv.innerHTML+ inf.innerHTML;
     }
 
@@ -41,6 +43,9 @@ async function deleteProduct() {
                 return;
             }
         }
+        closeInfo();
+        alert('Продукт успешно удален!');
+        window.location.reload();
     } catch (error) {
             throw new Error('Ошибка при получении данных с сервера');
     }
