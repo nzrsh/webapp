@@ -37,6 +37,7 @@ input{
 }
 
 .item{
+    padding: 3%;
     text-align: center;
     margin: 1%;
     height: 10%;
@@ -46,6 +47,7 @@ input{
     border: 1px solid;
     display: inline-block;
 }
+
 
 #inputContainer {
     width: 30%;
