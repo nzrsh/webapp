@@ -20,7 +20,9 @@ func SetupRouter() *httprouter.Router {
 
 	r.POST("/auth/register", registerHandler)
 	r.POST("/auth/login", loginHandler)
-	r.POST("/auth/me", meHandler)
+	r.GET("/auth/logout", logoutHandler)
+	//Выдача данных о пользователе по токену
+	r.GET("/auth/me", meHandler)
 
 	//API HANDLERS
 

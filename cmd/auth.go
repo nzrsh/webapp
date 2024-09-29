@@ -204,10 +204,7 @@ func meHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	var data UserData
 	data.Login = claims.Login
-
 	json.NewEncoder(w).Encode(data)
-	w.WriteHeader(http.StatusOK)
-
 }
 
 func validateCreds(creds Credentials) error {
@@ -218,4 +215,16 @@ func validateCreds(creds Credentials) error {
 		return ErrEmptyPassword
 	}
 	return nil
+}
+
+func logoutHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "token",
+		Value:    "",
+		Expires:  time.Now().Add(-1 * time.Hour),
+		Path:     "/",
+		HttpOnly: true,
+	})
+
+	w.WriteHeader(http.StatusOK)
 }
