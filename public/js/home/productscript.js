@@ -30,10 +30,11 @@ function closeInfo(){
 
 
 // Убедитесь, что idInfo правильно определён перед вызовом этой функции
-document.getElementById("updateForm").addEventListener("submit", async function(event) {
+async function sendData(event) {
     event.preventDefault(); // Остановка стандартного поведения формы
 
-    const formData = new FormData(this); // Получаем данные формы
+    const formData = new FormData(updateForm); // Получаем данные формы
+    console.log(formData)
 
     try {
         const response = await fetch(`/api/products/${idInfo}`, {
@@ -63,7 +64,7 @@ document.getElementById("updateForm").addEventListener("submit", async function(
         console.error('Произошла ошибка:', error);
         alert('Произошла ошибка при обновлении продукта.');
     }
-});
+};
 
 async function deleteProduct() {
     const productId = idInfo;
