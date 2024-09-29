@@ -10,12 +10,14 @@ document.getElementById('queue').onclick = function(event) {
         inf.style.display = 'block';
         const sourceDiv = document.getElementById(event.target.id);
         const p = document.createElement('p');
-        p.textContent = 'Тип продукта: ' + event.target.name;
+        p.textContent = event.target.name;
         sourceDiv.appendChild(p);
         inf.innerHTML = sourceDiv.innerHTML+ inf.innerHTML;
     }
 
 };
+
+
 
 function closeInfo(){
     idInfo = 'none';
@@ -24,6 +26,44 @@ function closeInfo(){
     document.getElementById('overlay').style.display = 'none';
     document.getElementById('info').style.display = 'none';
 }
+
+
+
+// Убедитесь, что idInfo правильно определён перед вызовом этой функции
+document.getElementById("updateForm").addEventListener("submit", async function(event) {
+    event.preventDefault(); // Остановка стандартного поведения формы
+
+    const formData = new FormData(this); // Получаем данные формы
+
+    try {
+        const response = await fetch(`/api/products/${idInfo}`, {
+            method: 'POST',
+            body: formData // Отправляем FormData
+        });
+
+        if (!response.ok) {
+            if (response.status === 400) {
+                alert("Введите корректные данные!");
+                return;
+            } else {
+                throw new Error('Ошибка сети: ' + response.status);
+            }
+        }
+
+        const result = await response.json();
+        console.log('Продукт обновлён:', result);
+        alert('Продукт успешно обновлён!');
+
+        // Сброс формы
+        document.getElementById("update-name").value = '';
+        document.getElementById("update-price").value = '';
+        document.getElementById("update-type").value = '';
+        document.getElementById("update-image").value = '';
+    } catch (error) {
+        console.error('Произошла ошибка:', error);
+        alert('Произошла ошибка при обновлении продукта.');
+    }
+});
 
 async function deleteProduct() {
     const productId = idInfo;

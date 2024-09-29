@@ -20,7 +20,15 @@
         <button id="createProductButton">Создать продукт</button>
     </div>
     <div class="queue" id="queue"></div>
-    <div class="info" id = "info"><button class="reg_button" onclick="deleteProduct()">Удалить</button><button class="reg_button">Изменить</button></div>
+    <div class="info" id = "info">
+        <form id = "updateForm" enctype="multipart/form-data" >
+            <input type=text id="update-name" name="name" placeholder="Введите новое имя">
+            <input type=text id="update-price" name="price" placeholder="Введите новую стоимость">
+            <input type=text id="update-type" name="type" placeholder="Введите новый тип">
+            <input type="file" access="image/jpeg" name="image" placeholder="Выберите новый файл">
+            <input type ="submit" value = "Изменить" class="reg_button" style="margin-top:3%;" >
+        </form>
+<button class="reg_button" onclick="deleteProduct()" style="margin-top:3%;">Удалить</button></div>
     <div class="overlay" id="overlay"><button onclick="closeInfo()">Закрыть</button></div>
 </body>
 <script src="/public/js/home/tablerequestscript.js"></script>

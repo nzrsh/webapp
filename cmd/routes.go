@@ -34,7 +34,7 @@ func SetupRouter() *httprouter.Router {
 	//Эндпоинт получения продукта в формате объекта json
 	r.GET("/api/products/:id", getProductHandler)
 	//Эндпоинт обновления продукта
-	r.PUT("/api/products/:id", JWTAuthMiddleware(updateProductHandler))
+	r.POST("/api/products/:id", JWTAuthMiddleware(updateProductHandler))
 	//Эндпоинт удаления продукта
 	r.DELETE("/api/products/:id", JWTAuthMiddleware(deleteProductHandler))
 	//Эндпоинт добавления продукта

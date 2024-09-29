@@ -1,9 +1,7 @@
 const queueElement = document.getElementById('queue');
 const addButton = document.getElementById('addButton');
 
-//Получить продукты
 document.addEventListener('DOMContentLoaded', fetchProducts);
-//Получить данные пользователя
 document.addEventListener('DOMContentLoaded', fetchUser);
 
 

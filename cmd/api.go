@@ -57,6 +57,7 @@ func getProductHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 }
 
 func updateProductHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	log.Println("постучался")
 	idStr := ps.ByName("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
