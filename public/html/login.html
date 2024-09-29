@@ -11,17 +11,17 @@
 <body>
     <div class="main">
         <div class="login">
-            <span>Добро пожаловать</span>
+            <span>Авторизация</span>
             <form onsubmit="auth(event)">
                 <input type="text" id="login" placeholder="Введите логин"> <br>
-                <input type="text" id="password" placeholder="Введите пароль"><br>
+                <input type="password" id="password" placeholder="Введите пароль"><br>
 
                 <button type="submit" class="reg-button">Войти</button>
             </form>
             <hr>
-            <button class="reg-button" onclick="goToReg()">Зарегистрироваться</button>
+            <button class="reg-button" onclick="goToReg()">Регистрация</button>
         </div>
     </div>
 </body>
-<script src="/public/js/logscript.js"></script>
+<script src="/public/js/login/logscript.js"></script>
 </html>

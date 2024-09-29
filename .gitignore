@@ -1,2 +1,2 @@
-database/data.db
-uploads/*
+./database/data.db
+./uploads/*
