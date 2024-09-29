@@ -16,6 +16,8 @@ func SetupRouter() *httprouter.Router {
 	r.GET("/login", loginPageHandler)
 	r.GET("/register", registerPageHandler)
 	r.GET("/storage", JWTAuthMiddleware(storagePageHandler))
+	r.GET("/edit", JWTAuthMiddleware(editPageHandler))
+	r.GET("/add", JWTAuthMiddleware(addPageHandler))
 
 	//AUTH HANDLERS
 
