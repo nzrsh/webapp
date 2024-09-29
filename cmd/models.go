@@ -18,6 +18,10 @@ type User struct {
 	Password string `json:"password"`
 }
 
+type UserData struct {
+	Login string `json:"login"`
+}
+
 type Product struct {
 	ID    int     `json:"id"`
 	Type  string  `json:"type"`
