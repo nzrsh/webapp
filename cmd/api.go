@@ -57,7 +57,6 @@ func getProductHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 }
 
 func updateProductHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	log.Println("постучался")
 	idStr := ps.ByName("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -66,11 +65,59 @@ func updateProductHandler(w http.ResponseWriter, r *http.Request, ps httprouter.
 		return
 	}
 
-	var product Product
-	if err := json.NewDecoder(r.Body).Decode(&product); err != nil {
-		log.Printf("updateProductHandler | Ошибка при десереализации продукта: %s\n", err)
-		http.Error(w, "Некорректный запрос", http.StatusBadRequest)
+	err = r.ParseMultipartForm(10 << 20) // 10 MB
+	if err != nil {
+		http.Error(w, "Ошибка при парсинге формы", http.StatusBadRequest)
 		return
+	}
+
+	// Получаем данные из формы
+	typeProduct := r.FormValue("type")
+	nameProduct := r.FormValue("name")
+	priceProduct := r.FormValue("price")
+
+	// Создаем продукт
+	product := Product{}
+
+	// Проверка и обновление только тех полей, которые не пустые
+	if typeProduct != "" {
+		product.Type = typeProduct
+	}
+	if nameProduct != "" {
+		product.Name = nameProduct
+	}
+	if priceProduct != "" {
+		price, err := strconv.ParseFloat(priceProduct, 64)
+		if err != nil {
+			http.Error(w, "Некорректная цена", http.StatusBadRequest)
+			return
+		}
+		product.Price = price
+	}
+
+	// Сохранение картинки, если была загружена
+	file, _, err := r.FormFile("image")
+	if err != nil && err != http.ErrMissingFile {
+		http.Error(w, "Ошибка при получении изображения", http.StatusBadRequest)
+		return
+	}
+	if file != nil {
+		defer file.Close()
+
+		imgPath := filepath.Join("public", "img", fmt.Sprintf("%d.jpg", id))
+		out, err := os.Create(imgPath)
+		if err != nil {
+			http.Error(w, "Ошибка при сохранении изображения", http.StatusInternalServerError)
+			return
+		}
+		defer out.Close()
+
+		// Копируем содержимое файла в новый файл
+		_, err = io.Copy(out, file)
+		if err != nil {
+			http.Error(w, "Ошибка при копировании изображения", http.StatusInternalServerError)
+			return
+		}
 	}
 
 	// Обновляем продукт в базе данных
@@ -78,9 +125,12 @@ func updateProductHandler(w http.ResponseWriter, r *http.Request, ps httprouter.
 	if err != nil {
 		log.Printf("updateProductHandler | Ошибка при обновлении продукта: %s\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
+
+	// Отправляем ответ клиенту
 	w.WriteHeader(http.StatusOK)
-	//fmt.Fprintf(w, "Продукт с ID %d успешно обновлен.", id)
+	fmt.Fprintf(w, "Продукт с ID %d успешно обновлен.", id)
 }
 
 func deleteProductHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {

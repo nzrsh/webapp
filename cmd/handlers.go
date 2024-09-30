@@ -24,10 +24,6 @@ func storagePageHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Par
 	http.ServeFile(w, r, "./public/html/storage.html")
 }
 
-func editPageHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	http.ServeFile(w, r, "./public/html/edit.html")
-}
-
 func addPageHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	http.ServeFile(w, r, "./public/html/add.html")
 }

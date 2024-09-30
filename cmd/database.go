@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt"
@@ -108,16 +109,48 @@ func UpdateProductFromTable(id int, product Product) error {
 	if !exists {
 		return fmt.Errorf("продукт с ID %d не найден", id)
 	}
-	stmt, err := DB.Prepare("UPDATE products SET type = ?, name = ?, price = ? WHERE id = ?")
+
+	// Формируем запрос на обновление только тех полей, которые не пустые
+	query := "UPDATE products SET "
+	var updates []string
+	var args []interface{}
+
+	if product.Type != "" {
+		updates = append(updates, "type = ?")
+		args = append(args, product.Type)
+	}
+	if product.Name != "" {
+		updates = append(updates, "name = ?")
+		args = append(args, product.Name)
+	}
+	if product.Price != 0 {
+		updates = append(updates, "price = ?")
+		args = append(args, product.Price)
+	}
+
+	// Если нет обновлений, возвращаем ошибку
+	if len(updates) == 0 {
+		return fmt.Errorf("нечего обновлять")
+	}
+
+	// Добавляем ID продукта в аргументы
+	args = append(args, id)
+
+	// Собираем финальный запрос
+	query += strings.Join(updates, ", ") + " WHERE id = ?"
+
+	stmt, err := DB.Prepare(query)
 	if err != nil {
-		return fmt.Errorf("UpdateProductFromTable |  ошибка обновления продукта %s", err)
+		return fmt.Errorf("UpdateProductFromTable | ошибка подготовки запроса: %s", err)
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(product.Type, product.Name, product.Price, id)
+	// Выполняем обновление
+	_, err = stmt.Exec(args...)
 	if err != nil {
-		return fmt.Errorf("UpdateProductFromTable | ошибка обновления продукта %s", err)
+		return fmt.Errorf("UpdateProductFromTable | ошибка выполнения обновления продукта: %s", err)
 	}
+
 	return nil
 }
 

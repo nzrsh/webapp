@@ -51,8 +51,6 @@ async function sendData(event) {
             }
         }
 
-        const result = await response.json();
-        console.log('Продукт обновлён:', result);
         alert('Продукт успешно обновлён!');
 
         // Сброс формы
@@ -60,6 +58,8 @@ async function sendData(event) {
         document.getElementById("update-price").value = '';
         document.getElementById("update-type").value = '';
         document.getElementById("update-image").value = '';
+        window.location.reload();
+        return
     } catch (error) {
         console.error('Произошла ошибка:', error);
         alert('Произошла ошибка при обновлении продукта.');
