@@ -1,6 +1,5 @@
 
 
-
 document.getElementById('createProductButton').addEventListener('click', async () => {
     const type = document.getElementById('productType').value;
     const name = document.getElementById('productName').value;
