@@ -24,7 +24,6 @@ document.getElementById("addProductForm").addEventListener("submit", async funct
 
         const result = await response.json();
         console.log('Продукт создан:', result);
-        alert('Продукт успешно создан!');
         document.getElementById("type").value = '';
         document.getElementById("name").value = '';
         document.getElementById("price").value = '';

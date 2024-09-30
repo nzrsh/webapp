@@ -115,7 +115,6 @@ async function deleteFile(filename) {
     });
 
     if (response.ok) {
-        alert('Файл удалён');
         fetchFiles(); // Обновить список файлов
     } else {
         alert('Ошибка удаления файла');
@@ -136,7 +135,6 @@ async function renameFile(oldName) {
     });
 
     if (response.ok) {
-        alert('Файл переименован');
         fetchFiles(); // Обновить список файлов
     } else {
         alert('Ошибка переименования файла');
