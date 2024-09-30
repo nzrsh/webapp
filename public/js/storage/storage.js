@@ -1,4 +1,8 @@
 // Получение списка файлов с сервера
+
+function goToHome(){
+    window.location.href = '/';
+}
 async function fetchFiles() {
     const response = await fetch('/storage/files', {
         method: 'GET'
@@ -98,7 +102,6 @@ document.getElementById('uploadForm').addEventListener('submit', async (event) =
     });
 
     if (response.ok) {
-        alert('Файлы успешно загружены');
         fetchFiles(); // Обновить список файлов
     } else {
         alert('Ошибка загрузки файлов');

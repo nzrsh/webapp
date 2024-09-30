@@ -48,6 +48,9 @@ function displayLogoutButton() {
     const container = document.getElementById('button-container');
     container.innerHTML = `
         <button id="logoutButton">Выйти</button>
+        <button id="storageButton">Хранилище</button>
+        <button id="addButton">Добавление</button>
+
     `;
     document.getElementById('logoutButton').onclick = async () => {
         const response = await fetch('/auth/logout', {
@@ -60,6 +63,12 @@ function displayLogoutButton() {
         } else {
             alert('Ошибка при выходе.');
         }
+    };
+    document.getElementById('storageButton').onclick = async () => {
+        window.location.href = "/storage";
+    };
+    document.getElementById('addButton').onclick = async () => {
+        window.location.href = "/add";
     };
 }
 

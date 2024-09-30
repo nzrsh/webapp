@@ -1,3 +1,7 @@
+function goToHome(){
+    window.location.href = '/';
+}
+
 document.getElementById("addProductForm").addEventListener("submit", async function(event) {
     event.preventDefault();
     

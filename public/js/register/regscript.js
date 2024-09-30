@@ -1,4 +1,6 @@
-
+function goToHome(){
+    window.location.href = '/';
+}
 function goToLog(){
     document.location.href = "/login";
 }

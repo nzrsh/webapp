@@ -1,3 +1,6 @@
+function goToHome(){
+    window.location.href = '/';
+}
 function goToReg(){
     document.location.href = "/register";;
 }

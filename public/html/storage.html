@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/public/styles/styles.css">
     <title>Хранилище</title>
 </head>
 <body>
+    <button onclick="goToHome()">Вернуться</button>
     <h1>Облачное хранилище</h1>
     <form id="uploadForm">
         <input type="file" id="fileInput" multiple>
@@ -13,7 +15,7 @@
     </form>
 
     <h2>Загруженное</h2>
-    <table id="fileTable">
+    <table id="fileTable" class="storage">
         <thead>
             <tr>
                 <th>Наименование</th>
