@@ -4,9 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
-	_ "golang.org/x/crypto/bcrypt"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func OpenDatabase(path string) *sql.DB {
@@ -65,7 +66,7 @@ func GetProductsFromTable() ([]Product, error) {
 	var Products []Product
 	rows, err := DB.Query("SELECT id, type, name, price FROM products")
 	if err != nil {
-		return nil, fmt.Errorf("ошибка при получении списка продуктов: %s", err)
+		return nil, fmt.Errorf("GetProductsFromTable | ошибка при получении списка продуктов: %s", err)
 	}
 
 	defer rows.Close()
@@ -74,12 +75,12 @@ func GetProductsFromTable() ([]Product, error) {
 		var p Product
 		err := rows.Scan(&p.ID, &p.Type, &p.Name, &p.Price)
 		if err != nil {
-			return nil, fmt.Errorf("ошибка при считывании продукта в структуру: %s", err)
+			return nil, fmt.Errorf("GetProductsFromTable |  ошибка при считывании продукта в структуру: %s", err)
 		}
 		Products = append(Products, p)
 	}
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("ошибка при выполнении запроса на чтение продуктов: %s", err)
+		return nil, fmt.Errorf("GetProductsFromTable | ошибка при выполнении запроса на чтение продуктов: %s", err)
 	}
 	return Products, nil
 }
@@ -98,33 +99,67 @@ func GetProductFromTable(id int) (Product, error) {
 	return p, nil
 }
 
+// Изменение продукта в БД по его ID
 func UpdateProductFromTable(id int, product Product) error {
 	var exists bool
 	err := DB.QueryRow("SELECT EXISTS(SELECT 1 FROM products WHERE id=?)", id).Scan(&exists)
 	if err != nil {
-		return fmt.Errorf("ошибка при проверке существования продукта: %s", err)
+		return fmt.Errorf("UpdateProductFromTable | ошибка при проверке существования продукта: %s", err)
 	}
 	if !exists {
 		return fmt.Errorf("продукт с ID %d не найден", id)
 	}
-	stmt, err := DB.Prepare("UPDATE products SET type = ?, name = ?, price = ? WHERE id = ?")
+
+	// Формируем запрос на обновление только тех полей, которые не пустые
+	query := "UPDATE products SET "
+	var updates []string
+	var args []interface{}
+
+	if product.Type != "" {
+		updates = append(updates, "type = ?")
+		args = append(args, product.Type)
+	}
+	if product.Name != "" {
+		updates = append(updates, "name = ?")
+		args = append(args, product.Name)
+	}
+	if product.Price != 0 {
+		updates = append(updates, "price = ?")
+		args = append(args, product.Price)
+	}
+
+	// Если нет обновлений, возвращаем ошибку
+	if len(updates) == 0 {
+		return fmt.Errorf("нечего обновлять")
+	}
+
+	// Добавляем ID продукта в аргументы
+	args = append(args, id)
+
+	// Собираем финальный запрос
+	query += strings.Join(updates, ", ") + " WHERE id = ?"
+
+	stmt, err := DB.Prepare(query)
 	if err != nil {
-		return fmt.Errorf("ошибка обновления продукта %s", err)
+		return fmt.Errorf("UpdateProductFromTable | ошибка подготовки запроса: %s", err)
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(product.Type, product.Name, product.Price, id)
+	// Выполняем обновление
+	_, err = stmt.Exec(args...)
 	if err != nil {
-		return fmt.Errorf("ошибка обновления продукта %s", err)
+		return fmt.Errorf("UpdateProductFromTable | ошибка выполнения обновления продукта: %s", err)
 	}
+
 	return nil
 }
 
+// Удаление продукта из БД по его ID
 func DeleteProductFromTable(id int) error {
 	var exists bool
 	err := DB.QueryRow("SELECT EXISTS(SELECT 1 FROM products WHERE id=?)", id).Scan(&exists)
 	if err != nil {
-		return fmt.Errorf("ошибка при проверке существования продукта: %s", err)
+		return fmt.Errorf("DeleteProductFromTable | ошибка при проверке существования продукта: %s", err)
 	}
 	if !exists {
 		return fmt.Errorf("продукт с ID %d не найден", id)
@@ -132,35 +167,124 @@ func DeleteProductFromTable(id int) error {
 
 	stmt, err := DB.Prepare("DELETE FROM products WHERE id = ?")
 	if err != nil {
-		return fmt.Errorf("ошибка удаления продукта %s", err)
+		return fmt.Errorf("DeleteProductFromTable | ошибка удаления продукта %s", err)
 	}
 	defer stmt.Close()
 
 	_, err = stmt.Exec(id)
 	if err != nil {
-		return fmt.Errorf("ошибка удаления продукта %s", err)
+		return fmt.Errorf("DeleteProductFromTable | ошибка удаления продукта %s", err)
 	}
 
 	return nil
 }
 
+// Добавление нового продукта в качестве новой записи в БД
 func CreateProductInTable(product Product) (int, error) {
 
 	stmt, err := DB.Prepare("INSERT INTO products (type, name, price) VALUES (?, ?, ?)")
 	if err != nil {
-		return 0, fmt.Errorf("ошибка cоздания продукта %s", err)
+		return 0, fmt.Errorf("CreateProductInTable | ошибка cоздания продукта %s", err)
 	}
 	defer stmt.Close()
 
 	result, err := stmt.Exec(product.Type, product.Name, product.Price)
 	if err != nil {
-		return 0, fmt.Errorf("ошибка cоздания продукта %s", err)
+		return 0, fmt.Errorf("CreateProductInTable | ошибка cоздания продукта %s", err)
 	}
 
 	id, err := result.LastInsertId()
 	if err != nil {
-		return 0, fmt.Errorf("ошибка cоздания продукта %s", err)
+		return 0, fmt.Errorf("CreateProductInTable | ошибка cоздания продукта %s", err)
 	}
 
 	return int(id), nil
+}
+
+// Хеширование пароля с помощью безопасного алгоритма шифрования bcrypt
+func HashPassword(password string) (string, error) {
+	//Генерация хеша
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", fmt.Errorf("HashPassword | ошибка генерации хеша пароля: %s", err)
+	}
+	return string(hashedPassword), nil
+}
+
+// Проверка, совпадает ли пароль с его хешем
+func CheckPassword(hashedPassword, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+}
+
+// Сохраняем пользователя в БД
+func SaveUserToDB(login string, hashedPassword string) error {
+	insertQuery := `INSERT INTO users (login, password) VALUES (?,?)`
+	_, err := DB.Exec(insertQuery, login, hashedPassword)
+	if err != nil {
+		return fmt.Errorf("SaveUserToDB | ошибка сохранения пользователя в базу данных: %s", err)
+	}
+
+	log.Printf("Пользователь %s успешно добавлен.", login)
+	return nil
+}
+
+// Аутентификация пользователя через БД
+func AuthenticateUser(login, password string) error {
+	// Получение хешированного пароля пользователя из БД
+	var hashedPassword string
+	query := `SELECT password FROM users WHERE login = ?`
+	err := DB.QueryRow(query, login).Scan(&hashedPassword)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return ErrInvalidCredentials
+		}
+		return err
+	}
+
+	// Сравнение введённого пароля с хешем
+	err = CheckPassword(hashedPassword, password)
+	if err != nil {
+		return ErrInvalidCredentials
+	}
+
+	log.Printf("Аутентификация пользователя \"%s\" успешна!", login)
+	return nil
+}
+
+func CheckUserExists(login string) (bool, error) {
+	var exists bool
+	checkQuery := "SELECT EXISTS(SELECT 1 FROM users WHERE login = ? LIMIT 1);"
+	err := DB.QueryRow(checkQuery, login).Scan(&exists)
+	if err != nil && err != sql.ErrNoRows {
+		return false, fmt.Errorf("CheckUserExists | ошибка поиска пользователя в бд: %s", err)
+	}
+	return exists, nil
+}
+
+// Функция для регистрации нового пользователя в базе данных
+func RegisterUser(login, password string) error {
+	// Проверяем, существует ли пользователь с данным логином
+	userExists, err := CheckUserExists(login)
+	if err != nil {
+		return err
+	}
+
+	if userExists {
+		return ErrUserAlreadyExists
+	}
+
+	// Хешируем пароль перед его сохранением в базу данных
+	hashedPassword, err := HashPassword(password)
+	if err != nil {
+		return fmt.Errorf("пользователь \"%s\" ошибка хеширования пароля: %v", login, err)
+	}
+
+	// SQL запрос для добавления нового пользователя в базу данных
+	query := `INSERT INTO users (login, password) VALUES (?, ?);`
+	_, err = DB.Exec(query, login, string(hashedPassword))
+	if err != nil {
+		return fmt.Errorf("ошибка при добавлении пользователя: %v", err)
+	}
+
+	return nil
 }

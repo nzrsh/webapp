@@ -1,14 +1,32 @@
 package main
 
+import "errors"
+
+type FileInfo struct {
+	Name    string `json:"name"`
+	Size    int64  `json:"size"`
+	ModTime string `json:"modTime"`
+	IsImage bool   `json:"isImage"`
+}
+
 type Credentials struct {
 	Login    string `json:"login"`
 	Password string `json:"password"`
 }
 
+var ErrInvalidCredentials = errors.New("неверный логин или пароль")
+var ErrUserAlreadyExists = errors.New("пользователь уже существует")
+var ErrEmptyLogin = errors.New("логин не может быть пустым")
+var ErrEmptyPassword = errors.New("пароль не может быть пустым")
+
 type User struct {
 	ID       int    `json:"id"`
 	Login    string `json:"login"`
 	Password string `json:"password"`
+}
+
+type UserData struct {
+	Login string `json:"login"`
 }
 
 type Product struct {

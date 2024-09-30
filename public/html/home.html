@@ -8,25 +8,30 @@
 </head>
 <body>
 
-    <table class="header">
-        <thead>
-            <tr>
-                <th><button class="icon" id="addButton">Добавить</button></th>
-                <th><button class="icon">Удалить</button></th>
-                <th><button class="icon">Войти</button></th>
-            </tr>
-        </thead>
-    </table>
-
+    <div class="header">Вы вошли как: 
+        <label class = "user-label" id="user-label"></label>
+        <label class = "button-container" id = "button-container"></label>
+    </div>
+    
     <div id="inputContainer">
         <input class="product" type="text" placeholder="Тип продукта" id="productType" />
         <input class="product" type="text" placeholder="Название продукта" id="productName" />
         <input class="product" type="number" placeholder="Цена продукта" id="productPrice" />
         <button id="createProductButton">Создать продукт</button>
     </div>
-    <h1><span style="text-align: center; margin-left: 45%;">Вы на главной</span></h1>
     <div class="queue" id="queue"></div>
+    <div class="info" id = "info">
+        <form id = "updateForm" enctype="multipart/form-data" onsubmit="sendData(event)">
+            <input type=text id="update-name" name="name" placeholder="Введите новое имя">
+            <input type=text id="update-type" name="type" placeholder="Введите новый тип">
+            <input type=text id="update-price" name="price" placeholder="Введите новую стоимость">
+            <input type="file" id = "update-image" access="image/jpeg" name="image" placeholder="Выберите новый файл">
+            <input type ="submit" value = "Изменить" class="reg_button" style="margin-top:3%;" >
+        </form>
+<button class="reg_button" onclick="deleteProduct()" style="margin-top:3%;">Удалить</button></div>
+    <div class="overlay" id="overlay"><button onclick="closeInfo()">Закрыть</button></div>
 </body>
-<script src="/public/js/tablerequestscript.js"></script>
-<script src="/public/js/tablescript.js"></script>
+<script src="/public/js/home/tablerequestscript.js"></script>
+<script src="/public/js/home/tablescript.js"></script>
+<script src="/public/js/home/productscript.js"></script>
 </html>

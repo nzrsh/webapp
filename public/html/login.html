@@ -9,18 +9,20 @@
 </head>
 
 <body>
+    <button onclick="goToHome()">Вернуться</button>
     <div class="main">
         <div class="login">
-            <span>Добро пожаловать</span>
-            <Form>
-                <input type="text" name="login" placeholder="Введите логин"> <br>
-                <input type="text" name="password" placeholder="Введите пароль"><br>
-                <button type="submit" class="reg-button" >Войти</button>
-                <hr>
-                <button class="reg-button">Зарегистрироваться</button>
-            </Form>
+            <span>Авторизация</span>
+            <form onsubmit="auth(event)">
+                <input type="text" id="login" placeholder="Введите логин"> <br>
+                <input type="password" id="password" placeholder="Введите пароль"><br>
+
+                <button type="submit" class="reg-button">Войти</button>
+            </form>
+            <hr>
+            <button class="reg-button" onclick="goToReg()">Регистрация</button>
         </div>
     </div>
 </body>
-
+<script src="/public/js/login/logscript.js"></script>
 </html>
