@@ -49,7 +49,7 @@ func JWTAuthMiddleware(next httprouter.Handle) httprouter.Handle {
 
 		if err != nil {
 			if err == http.ErrNoCookie {
-				http.Redirect(w, r, "/login", http.StatusFound)
+				http.Error(w, http.ErrNoCookie.Error(), http.StatusUnauthorized)
 				return
 			}
 			w.WriteHeader(http.StatusBadRequest)
@@ -65,7 +65,7 @@ func JWTAuthMiddleware(next httprouter.Handle) httprouter.Handle {
 		if err != nil {
 			if err == jwt.ErrSignatureInvalid {
 				log.Printf("Пользователь \"%s\" неверная подпись токена\n", claims.Login)
-				http.Redirect(w, r, "/login", http.StatusFound)
+				http.Error(w, http.ErrNoCookie.Error(), http.StatusUnauthorized)
 				return
 			}
 			w.WriteHeader(http.StatusBadRequest)
@@ -74,7 +74,7 @@ func JWTAuthMiddleware(next httprouter.Handle) httprouter.Handle {
 
 		if !token.Valid {
 			log.Printf("Пользователь \"%s\" токен невалиден\n", claims.Login)
-			http.Redirect(w, r, "/login", http.StatusFound)
+			http.Error(w, http.ErrNoCookie.Error(), http.StatusUnauthorized)
 			return
 		}
 

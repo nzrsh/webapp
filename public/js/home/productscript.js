@@ -1,7 +1,7 @@
 mainInf = document.getElementById('info').innerHTML;
 var idInfo;
 
-document.getElementById('queue').onclick = function(event) {
+document.getElementById('queue').onclick = function (event) {
     if (event.target.classList.contains('item')) {
         document.getElementById('overlay').style.display = 'block';
         idInfo = event.target.id;
@@ -12,14 +12,14 @@ document.getElementById('queue').onclick = function(event) {
         const p = document.createElement('p');
         p.textContent = event.target.name;
         sourceDiv.appendChild(p);
-        inf.innerHTML = sourceDiv.innerHTML+ inf.innerHTML;
+        inf.innerHTML = sourceDiv.innerHTML + inf.innerHTML;
     }
 
 };
 
 
 
-function closeInfo(){
+function closeInfo() {
     idInfo = 'none';
     console.log(idInfo);
     document.getElementById('info').innerHTML = mainInf;
@@ -46,7 +46,12 @@ async function sendData(event) {
             if (response.status === 400) {
                 alert("Введите корректные данные!");
                 return;
-            } else {
+            } if (response.status === 401) {
+                alert("Вы не авторизованы!");
+                window.location.path = "/login"
+                return;
+            }
+            else {
                 throw new Error('Ошибка сети: ' + response.status);
             }
         }
@@ -78,17 +83,24 @@ async function deleteProduct() {
                 const message = await response.text();
                 alert('Ошибка удаления: ' + message);
                 return;
-            } 
-            if (response.status == 500) {
-                alert('Внутренняя ошибка сервера');
-                return;
+            } else {
+                if (response.status === 401) {
+                    alert("Вы не авторизованы!");
+                    window.location.path = "/login"
+                    return;
+                }
+                if (response.status == 500) {
+                    alert('Внутренняя ошибка сервера');
+                    return;
+                }
+
             }
         }
         closeInfo();
         alert('Продукт успешно удален!');
         window.location.reload();
     } catch (error) {
-            throw new Error('Ошибка при получении данных с сервера');
+        throw new Error('Ошибка при получении данных с сервера');
     }
-  
+
 }
