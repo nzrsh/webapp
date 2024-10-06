@@ -15,7 +15,7 @@ function productManager(items) {
         div.name = item.type;
 
         const img = document.createElement('img');
-        img.src = 'api/img/' + item.id; // Проверьте, что этот путь правильный
+        img.src = 'api/img/' + item.id; 
         img.width = 150;
         img.height = 150;
         div.appendChild(img); // Добавляем изображение
@@ -39,7 +39,7 @@ function DisplayLoginbutton() {
         <button id="loginButton">Войти</button>
     `;
     document.getElementById('loginButton').onclick = () => {
-        window.location.href = '/login'; // Перенаправляем на страницу логина
+        goTo('/login') // Перенаправляем на страницу логина
     };
 }
 
@@ -65,10 +65,10 @@ function displayLogoutButton() {
         }
     };
     document.getElementById('storageButton').onclick = async () => {
-        window.location.href = "/storage";
+        goTo('/storage');
     };
     document.getElementById('addButton').onclick = async () => {
-        window.location.href = "/add";
+        goTo('/add')
     };
 }
 
